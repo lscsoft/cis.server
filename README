@@ -1,0 +1,4 @@
+# Channel Information System
+## The core of the LIGO Channel Information System database server
+
+This package contains the core, reusable Django interface to the Channel Information System server as developed for the Laser Interferometer Gravitational-wave Observatory (LIGO) project.
