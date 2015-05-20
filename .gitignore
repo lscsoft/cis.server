@@ -22,6 +22,7 @@ var/
 *.egg
 MANIFEST
 Portfile
+/cis/server/version.py
 
 # Installer logs
 pip-log.txt
