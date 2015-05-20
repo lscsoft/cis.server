@@ -1,0 +1,8 @@
+{% extends "rest_framework/base.html" %}
+{% block branding %}
+    <a href="/">Channel Information System</a>
+{% endblock %}
+
+{% block userlinks %}
+    {{ request.user }}
+{% endblock %}

@@ -1,0 +1,154 @@
+
+{% extends "base.html" %}
+
+{% block js %}
+
+    <script
+        src="https://ajax.googleapis.com/ajax/libs/dojo/1.8.1/dojo/dojo.js"
+        type="text/javascript"
+        djConfig="parseOnLoad:true"
+    ></script>
+
+    <link rel="stylesheet" href="https://ajax.googleapis.com/ajax/libs/dojo/1.8.1/dojox/grid/resources/Grid.css">
+    <link rel="stylesheet" href="https://ajax.googleapis.com/ajax/libs/dojo/1.8.1/dojox/grid/resources/tundraGrid.css">
+
+    <style type="text/css">
+        .dojoxGrid table {
+            margin: 0;
+        }
+    </style>
+
+    <script type="text/javascript">
+
+        formatStatus = function(value) {
+		if (value == "obsolete") {
+			return '<div align="center" style="color:red">X</div>';
+		} else if (value == "testpoint") {
+			return '<div align="center" style="color:orange">X</div>';
+		} else {
+			return '<div align="center" style="color:green">X</div>';
+		}
+	};
+
+        formatChannel = function(item, rowIndex, cell) {
+            // grid has getItem(rowIndex)
+            var store = cell.grid.store,
+                resource = store.getValue(item, "displayurl"),
+                name = store.getValue(item, "name");
+            return '<a href="' + resource + '">' + name + '</a>';
+        };
+
+        formatScientific = function(n) {
+            x = Number(n);
+            return isNaN(x)? n : x.toExponential();
+        };
+
+
+        require(["dojo/parser",
+                 "dojo/store/JsonRest",
+                 "dojo/data/ObjectStore",
+                 "dojox/grid/DataGrid",
+                 "dojo/domReady!"], function(parser, JsonRest, ObjectStore) {
+
+            rest_store = new JsonRest({target: "{% url api-channels %}", sortParam:"sort"});
+            store = new ObjectStore({objectStore: rest_store});
+            parser.parse();
+	    // No sorting on status, which is column 2.
+	    //grid.canSort = function (x) { return Math.abs(x) != 2; }
+            dojo.connect(dojo.byId("queryForm"), "onsubmit", function(e) { 
+                e.preventDefault();
+		updateQuery();
+            });
+	    var updateQuery = function() {
+			    var query = dojo.byId('q').value;
+			    var current_only = dojo.byId('current_only').checked;
+		            if (current_only) {
+		                grid.setQuery({q:query,current_only:1});
+		            } else {
+		                grid.setQuery({q:query,current_only:0});
+		            }
+		            // http://mail.dojotoolkit.org/pipermail/dojo-interest/2010-July/047414.html
+
+	    };
+	    dojo.connect(dojo.byId('current_only'), "onclick", function(e) {
+			    updateQuery();
+	    });
+            dojo.connect(grid, "_onFetchComplete", function(items, req){
+                // Update count of found channels.
+                dojo.byId("nchans").innerHTML = grid.rowCount + " channels found";
+            });
+        });
+
+    </script>
+{% endblock %}
+
+{% block content %}
+    <h2>Channels</h2>
+
+    <form id="queryForm">
+        <input name="q" id="q" value="{{query}}"></input>
+	<span id="nchans"></span><br/>
+	<input name="current_only" id="current_only"
+	       type="checkbox"
+	       {{ current_checked }}
+	       />
+	<label for="current_only">Current Channels Only</label>
+    </form>
+
+
+    <table data-dojo-type="dojox.grid.DataGrid" store="store" jsId="grid" query='{q:"{{query}}"}' style="height:400px">
+        <thead>
+          <tr>
+            <th field="ifo" width="30px">IFO</th>
+            <th field="subsystem" width="70px">Subsystem</th>
+            <th field="_item" formatter="formatChannel" width="250px">Channel Name</th>
+            <th field="datarate" width="30px">Data Rate</th>
+            <th field="units" width="25px">Units</th>
+            <th field="acquire" width="50px">Acquire</th>
+            <th field="offset" width="30px">Offset</th>
+            <th field="slope" formatter="formatScientific" width="80px">Slope</th>
+            <th field="source" width="80px">Model</th>
+            <th field="created" width="150px">Modified</th>
+          </tr>
+        </thead>
+
+    <noscript>
+        {% for channel in channel_list %}
+            <tr>
+                <td>{{channel.ifo.name}}</td>
+                <td>{{channel.subsystem}}</td>
+                <td><a href="{% url channel channel.id %}">{{ channel.name }}</a></td>
+                <td>{{channel.datarate}}</td>
+                <td>{{channel.units}}</td>
+                <td>{{channel.acquire}}</td>
+                <td>{{channel.offset}}</td>
+                <td>{{channel.slope}}</td>
+                <td>{{channel.source}}</td>
+                <td>{{channel.created|date:timeformat}}</td>
+            </tr>
+        {% endfor %}
+    </noscript>
+    </table>
+    <noscript>
+    {% if is_paginated %}
+        <div class="pagination">
+            <span class="step-links">
+                {% if page_obj.has_previous %}
+                    <a href="?page={{ page_obj.previous_page_number }}&q={{query}}">previous</a>
+                {% endif %}
+
+                <span class="current">
+                    Page {{ page_obj.number }} of {{ paginator.num_pages }}.
+                </span>
+
+                {% if page_obj.has_next %}
+                    <a href="?page={{ page_obj.next_page_number }}&q={{query}}">next</a>
+                {% endif %}
+                </span>
+            </span>
+        </div>
+    {% endif %}
+    </noscript>
+{% endblock %}
+
+

@@ -1,0 +1,17 @@
+<tr id="D{{description.name}}">
+<td valign="top">
+    [<a onClick="savedescription('D{{description.name}}','DF{{description.name}}', '{{description.name}}')">Save</a>]
+    [<a onClick="canceldescription('D{{description.name}}', '{{description.name}}')">Cancel</a>]
+</td>
+<td valign="top">
+    <strong> {{ description.name }} </strong>
+</td>
+<td>
+    <form id="DF{{description.name}}">
+        {% csrf_token %}
+        <table>
+            {{ form.as_table }}
+        </table>
+    </form>
+</td>
+</tr>

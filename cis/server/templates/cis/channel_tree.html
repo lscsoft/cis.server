@@ -1,0 +1,159 @@
+
+{% extends "base.html" %}
+
+{% block js %}
+
+    <script
+        src="https://ajax.googleapis.com/ajax/libs/dojo/1.8.1/dojo/dojo.js"
+        type="text/javascript"
+        djConfig="parseOnLoad:true"
+    ></script>
+
+    <script>
+        function edit_description_url(pk) {
+            s = "{% url edit_description 'change' %}";
+            return s.replace('change', pk);
+        }
+    </script>
+    <script
+        src="{{STATIC_URL}}js/description_edit.js"
+        type="text/javascript">
+    </script>
+
+    <link rel="stylesheet" href="https://ajax.googleapis.com/ajax/libs/dojo/1.8.1/dojox/grid/resources/Grid.css">
+    <link rel="stylesheet" href="https://ajax.googleapis.com/ajax/libs/dojo/1.8.1/dojox/grid/resources/tundraGrid.css">
+
+    <style type="text/css">
+        .dojoxGrid table {
+            margin: 0;
+        }
+        #container {
+            width: 100%;
+        }
+        #left {
+            float: left;
+            width: 20%;
+        }
+        #right {
+        }
+    body, html { width:100%; height:100%; margin:0; padding:0; }
+    #borderContainer { width:100%; height:100% }
+    </style>
+
+    <script type="text/javascript">
+        require([
+                 "dojo/store/JsonRest",
+                 "dijit/Tree",
+                 "dijit/layout/ContentPane",
+                 "dijit/layout/BorderContainer",
+                 "dojox/data/QueryReadStore",
+                 "dojo/data/ItemFileReadStore",
+                 "dojo/parser",
+                 "dojo/domReady!"],
+            function(JsonRest, Tree, ContentPane) {
+                store = new JsonRest({
+                    target: "{% url tree %}data/",
+                    getRoot: function(onItem, onError){
+                        this.get("").then(onItem, onError);
+                    },
+		    mayHaveChildren: function(object){
+			return "children" in object;
+		    },
+                    getChildren: function(object, onComplete, onError){
+                        if (object.children != true) {
+                              onComplete(object.children);
+                        }
+                        else {
+                            this.get(object.id).then(function(fullObject){
+                                // copy to the original object so it has the children array as well.
+                                object.children = fullObject.children;
+                                // now that full object, we should have an array of children
+                                onComplete(fullObject.children);
+                            }, function(error){
+                                // an error occurred, log it, and indicate no children
+                                console.error(error);
+                                onComplete([]);
+                            });
+                        }
+                    },
+                    getLabel: function(object){
+                        if (object.children) {
+                            return object.name;
+                        }
+                        // return object.fullname;
+                        return object.name;
+                    }
+                });
+
+                tree = new Tree( {model: store, showRoot:false }, "tree");
+                tree.startup();
+                {% if selection %}
+                    console.log("there is a selection of " + "{{ selection }}");
+                    selectNode = function(){
+                        console.log("{{ selection }}" + "/" + "{{ path|safe }}");
+                        tree.set('path', {{ path|safe }});
+                    };
+                {% else %}
+                    selectNode = function(){
+                        console.log("no selection");
+                    };
+                {% endif %}
+                tree.onClick = function(item) {
+                    console.log("Hello. " + item);
+                    cp = dijit.byId("detail");
+                    if (!item.cid) {
+                        // This really should not happen.
+                        // It would me we are at a leaf node with no id.
+                        console.log("name: " + item.name);
+                        console.log("fullname: " + item.fullname);
+                        console.log("id: " + item.id);
+                        console.log("parentid: " + item.parentid);
+                        return;
+                    }
+                    //url =  "{% url channel 0 %}"+item.id;
+                    url = "{% url home %}" + "channel/"+item.cid; // XXX BAD
+                    console.log("DOING URL: " + url);
+                    cp.set("href", url);
+                }
+                selectNode();
+        });
+
+    </script>
+{% endblock %}
+
+{% block content %}
+    <h2>Channel Tree</h2>
+
+<!--
+    <div id="container">
+        <div id="left">
+            <div id="tree"></div>
+        </div>
+        <div cid="right">
+            <div id="detail" data-dojo-type="dijit.layout.ContentPane"></div>
+        </div>
+    </div>
+-->
+
+    <div
+        data-dojo-type="dijit.layout.BorderContainer"
+        data-dojo-props="design:'sidebar', gutters:true, liveSplitters:true"
+        id="borderContainer">
+            <div
+                data-dojo-type="dijit.layout.ContentPane"
+                data-dojo-props="splitter:true, region:'leading'"
+                style="width: 30%;">
+                    <div id="tree"></div>
+            </div>
+            <div
+                data-dojo-type="dijit.layout.ContentPane"
+                data-dojo-props="splitter:true, region:'center'"
+                id="detail">
+                    No selection.
+            </div>
+    </div>
+
+
+{% endblock %}
+
+

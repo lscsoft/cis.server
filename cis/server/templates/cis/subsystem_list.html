@@ -1,0 +1,15 @@
+
+{% extends "base.html" %}
+
+{% block title %}CIS | Subsystems{% endblock %}
+
+{% block content %}
+    <h2>Subsystems</h2>
+    {% for subsystem in subsystem_list %}
+        <a href={% url subsystem subsystem.id %}>{{ subsystem.name }}</a>
+        &mdash; {{ subsystem.description }} <br/>
+    {% endfor %}
+
+{% endblock %}
+
+

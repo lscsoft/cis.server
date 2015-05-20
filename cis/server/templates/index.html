@@ -1,0 +1,79 @@
+{% extends "base.html" %}
+
+{% block content %}
+  <h1>Home</h1>
+
+  <div class="text">
+    <p>
+      The goal of this site is to create a system that contains accurate and easily accessible information about the aLIGO channels.  We are currently in an early development and exploration phase during which time this site may be subject to frequent changes and updates.
+    </p>
+    <p>
+      If you encounter any problems or have suggestions or useful observations, send email to:
+      <a href="email:cis-support@gravity.phys.uwm.edu">cis-support@gravity.phys.uwm.edu</a> or
+      submit a bug report or feature request on <a href="https://bugs.ligo.org">bugs.ligo.org</a>.
+    </p>
+  </div>
+
+  <h2>Searching / Filtering</h2>
+  <div class="text">
+
+	  <p> Channel queries are based on case-insensitive sub-string
+	  matching.  Spaces indicate AND and the '|' character indicates OR.
+	  AND takes precedence.  For example, "PSL TEMP | sus- laser" will
+	  retrieve all channels with PSL and TEMP in their names along with all
+	  channels with SUS- and LASER in their names.</p>
+
+  </div>
+
+  <h2>Editing</h2>
+  <div class="text">
+
+	  <p>If you have editing priviledges, the text <strong>[Edit]</strong>
+	  will appear next to editable entries.  It doesn't look like a link,
+	  but if clicked on, an edit form will appear.  The form will ask for a
+	  short description and a long description. The short description
+	  should be a one liner.  The long description can be any HTML text, so
+	  you can enter links, images, whatever you require. Yes, it's a bit
+	  risky allowing any HTML, but we trust you.  Both fields are optional,
+	  so you can enter one or the other or both, though it is best to at
+	  least have a short description.</p>
+
+	  <p>Entering a description for a term defines that term for all
+	  channels.  So if it means something different in different channels,
+	  one would want to enumerate all possible meanings across channels.
+	  (but don't worry about doing that up front if you don't know whether
+	  there are other meanings or not -- presumably others can correct
+	  omissions)</p>
+
+	  <p>It has been reported that sometimes submitting an edit fails, as
+	  if a connection has timed out. Reloading the page and resubmitting
+	  fixes the problem, but that fails to remember your edits, so if this
+	  happens to you, you might save your entered text before reloading.
+	  This is a bug that is being investigated.</p>
+
+  </div>
+
+  <h2>Release notes:</h2>
+  <div class="text">
+    <ul style="list-style-type: none">
+        <li>v.0.8 &mdash; Queries can exclude obsolete channels.
+        <li>v.0.7 &mdash; Changed query language.  Selecting channels now looks like LigoDV-web channel filters.
+            eg. <i>PSL TEMP | SUS DAC</i> will return all channels containing (PSL and TEMP) or (SUS and DAC)
+            </li>
+        <li>v.0.6 &mdash; Added <a href="/api">REST Interface</a></li>
+	<li>v.0.5 &mdash; Descriptions of channel sub-parts shared across channels.</li>
+        <li>v.0.4 &mdash; Channel searches are case-insensitive.</li>
+        <li>v.0.3 &mdash; Added descriptions and description editing.</li>
+        <li>v.0.2
+            <ul>
+                <li>Primitive updates using data from sites.  Updates initiated and guided by hand.</li>
+                <li>Some reworking of database schema wrt channel description hierarchy.</li>
+            </ul>
+        </li>
+        <li>v.0.1 &mdash; Initial Version.  Based on mockup.</li>
+    </ul>
+
+  </div>
+{% endblock %}
+
+

@@ -1,0 +1,47 @@
+{% if not is_ajax %}
+<html>
+<head>
+
+    <title> {% block title %}CIS {%if title %} | {{title}}{% endif %}{% endblock %}</title>
+
+    <link rel="stylesheet" href="https://ajax.googleapis.com/ajax/libs/dojo/1.8.1/dojo/resources/dojo.css">
+    <link rel="stylesheet" href="https://ajax.googleapis.com/ajax/libs/dojo/1.8.1/dijit/themes/tundra/tundra.css">
+    <link rel="stylesheet" href="{{STATIC_URL}}css/base.css">
+
+    {% block js %}{% endblock %}
+
+</head>
+<body class="tundra">
+
+<div class="header">
+    <img style="float: left; padding: 5px;" src="{{STATIC_URL}}images/LIGO_logo50.png" height="50" width="69">
+    <h1 style="float: left; padding: 5px;" class="title">Channel Information System &mdash; <i>v.{{version}}</i>{% if not production_server %} / Development{% endif %}</i><br/></h1>
+<div style="display:inline;" id="quicksearch">
+        <form style="float: left; padding: 5px;" action="{% url channels %}">
+            Quick Search: <input name="qq"></input>
+        </form>
+    </div>
+</div>
+
+<ul id="nav">
+    <li class="navitem" id="nav_home"><a href="{% url home %}">Home</a></li>
+    <li class="navitem" id="nav_ifos"><a href="{% url ifos %}">IFOs</a></li>
+    <li class="navitem" id="nav_subsystems"><a href="{% url subsystems %}">Subsystems</a></li>
+    <li class="navitem" id="nav_channels"><a href="{% url channels %}">Channels</a></li>
+    <li class="navitem" id="nav_tree"><a href="{% url tree %}">Tree</a></li>
+    <!--
+    <li id="nav_admin"><a href="{% url admin:index %}">Admin</a></li>
+    <li class="right" id="nav_other"><a href="{% url home %}">Other</a></li>
+    -->
+    <li id="nav_user">You are &rarr; {{ username }}</li>
+</ul>
+
+<div id="content">
+{% endif %}
+{% block content %}{% endblock %}
+{% if not is_ajax %}
+</div>
+
+</body>
+</html>
+{% endif %}

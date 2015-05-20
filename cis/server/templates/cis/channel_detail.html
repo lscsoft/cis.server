@@ -1,0 +1,125 @@
+
+{% extends "base.html" %}
+
+{% load markup %}
+
+{% block title %}CIS | Channel Detail{% endblock %}
+
+{% block js %}
+<script
+    src="https://ajax.googleapis.com/ajax/libs/dojo/1.8.1/dojo/dojo.js"
+    type="text/javascript">
+</script>
+<script>
+    function edit_description_url(pk) {
+        s = "{% url edit_description 'change' %}";
+        return s.replace('change', pk);
+    }
+</script>
+<script
+    src="{{STATIC_URL}}js/description_edit.js"
+    type="text/javascript">
+</script>
+{% endblock %}
+
+{% block content %}
+  <h2>{{ channel.name }}</h2>
+
+  <table class="channel_detail">
+    <tr><th>IFO</th><td>{{ channel.ifo.name }} ({{ channel.ifo.description }})<td/></tr>
+    <tr><th>Subsystem</th><td>{{ channel.subsystem }} ({{ channel.subsystem_description }}) <td/></tr>
+    <tr><th colspan="2"></th></tr>
+    <tr><th>Sample Rate</th><td>{{ channel.datarate }} <td/></tr>
+    <tr><th>Data Type</th><td>{{ channel.datatypeName }} <td/></tr>
+    <tr><th>DCU Id</th><td>{{ channel.dcuid }} <td/></tr>
+    <tr><th>Chan Num</th><td>{{ channel.chnnum }} <td/></tr>
+    <tr><th colspan="2"></th></tr>
+    <tr><th>Gain</th><td>{{ channel.gain }} <td/></tr>
+    <tr><th>Slope</th><td>{{ channel.slope }} <td/></tr>
+    <tr><th>Units</th><td>{{ channel.units }} <td/></tr>
+    <tr><th>Offset</th><td>{{ channel.offset }} <td/></tr>
+    <tr><th colspan="2"></th></tr>
+    <tr><th>IFOid</th><td>{{ channel.ifoid }} <td/></tr>
+    <tr><th>Acquire</th><td>{{ channel.acquire }} <td/></tr>
+
+    <tr><th>Modified By</th><td>{{ channel.createdby }} <td/></tr>
+    <tr><th>Modified On</th><td>{{ channel.created|date:timeformat }} <td/></tr>
+  </table>
+
+  <p>
+  {% if channel.simulink_model_link %}
+	<a href="{{ channel.simulink_model_link }}" target="_new">SIMULINK Model</a>
+  {% endif %}
+  {% if pem_link %}
+  	&nbsp;
+	<a href="{{ pem_link }}" target="_new">PEM Location Diagram</a>
+  {% endif %}
+  {% if channel.is_current %}
+  	&nbsp;
+	<a href="{{ model_link }}" target="_new">Model .INI File</a>
+  {% endif %}
+  {% if spectrum_link %}
+	&nbsp;
+	<a href="{{ spectrum_link }}" target="_new">Current Spectrum</a>
+  {% endif %}
+  {% if time_series_link %}
+	&nbsp;
+	<a href="{{ time_series_link }}" target="_new">Current Time Series</a>
+  {% endif %}
+  </p>
+
+    <h2>Description</h2>
+    <div class="description">
+        <table>
+        {% for description in channel.descriptions %}
+            {% include "cis/description_fragment.html" %}
+        {% endfor %}
+        </table>
+    </div>
+    <div class="description">
+        <table>
+        {% with description=channel.description %}
+            {% include "cis/description_fragment.html" %}
+        {% endwith %}
+        </table>
+    </div>
+
+
+    <h3>Value History</h3>
+
+    <table class="values">
+      <tr>
+          <th>Acquire</th>
+          <th>Sample Rate</th>
+          <th>Data Type</th>
+          <th>DCU Id</th>
+          <th>Chan Num</th>
+          <th>Gain</th>
+          <th>Slope</th>
+          <th>Units</th>
+          <th>Offset</th>
+          <th>IFOid</th>
+          <th>Model</th>
+          <th>Modified By</th>
+          <th>Modified On</th>
+      </tr>
+    {% for value in channel.revisions %}
+      <tr class="{% cycle 'odd' 'even' %}">
+          <td>{{ value.acquire }}</td>
+          <td>{{ value.datarate }}</td>
+          <td>{{ value.datatype }}</td>
+          <td>{{ value.dcuid }}</td>
+          <td>{{ value.chnnum }}</td>
+          <td>{{ value.gain }}</td>
+          <td>{{ value.slope }}</td>
+          <td>{{ value.units }}</td>
+          <td>{{ value.offset }}</td>
+          <td>{{ value.ifoid }}</td>
+          <td>{{ value.source }}</td>
+          <td>{{ value.createdby }}</td>
+          <td>{{ value.created|date:timeformat }}</td>
+      </tr>
+    {% endfor %}
+    </table>
+
+{% endblock %}
