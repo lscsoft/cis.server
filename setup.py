@@ -129,6 +129,8 @@ setup(
     scripts=scripts,
     cmdclass=cmdclass,
     setup_requires=[
+        'GitPython',
+        'jinja2',
     ],
     install_requires=[
         'django >= 1.7',
