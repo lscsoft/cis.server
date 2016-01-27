@@ -27,8 +27,9 @@ except ImportError:
     from configparser import ConfigParser
 
 from django.db.utils import IntegrityError
+from django.db import reset_queries
 
-from ..models import (Channel, Ifo)
+from ..models import (Channel, Ifo, TreeNode)
 from .. import version
 
 __version__ = version.version
@@ -71,15 +72,15 @@ def update_ligo_model(inifile, modelname=None, verbose=False):
     n = len(cp._sections.keys())
 
     for i, name in enumerate(cp.sections()):
-        sys.stdout.flush()
         channel, created = Channel.get_or_new(name=name)
-        changed = channel.update_vals(cp.items(name))
+        params = dict(cp.items(name))
+        params['is_current'] = params.get('acquire', 0) > 0
+        changed = channel.update_vals(params.iteritems())
         if changed or created:
             if created:
-                # XXX super-risky
                 try:
-                    channel.ifo = Ifo.objects.filter(name=modelname[0:2])[0]
-                except IndexError:
+                    channel.ifo = Ifo.objects.get(name=modelname[0:2])
+                except Ifo.DoesNotExist:
                     channel.ifo = Ifo(name=modelname[0:2])
                     channel.ifo.save()
                     if verbose > 1:
@@ -112,3 +113,20 @@ def update_virgo_model(inifile, modelname=None, verbose=False):
     """
     raise NotImplementedError("Parsing Virgo INI files has "
                               "not been implemented yet.")
+
+
+def update_tree_nodes(verbose=False):
+    """Update the `TreeNode` database give a new set of channels
+    """
+    current = Channel.objects.filter(is_current=True)
+    n = current.count()
+    if verbose:
+        print("Checking channels:", end='\r')
+    add = TreeNode.add_channel
+    for i, channel in enumerate(current.iterator()):
+        add(channel)
+        reset_queries()
+        if verbose:
+            print("Checking channels: [%d/%d]" % (i+1, n), end='\r')
+    if verbose:
+        print("Checking channels: [%d/%d]" % (n, n))

@@ -25,9 +25,7 @@ import re
 from rest_framework.views import APIView
 from rest_framework.response import Response
 from rest_framework.reverse import reverse
-from rest_framework import serializers
-from rest_framework import permissions
-from rest_framework import generics
+from rest_framework import (serializers, permissions, generics)
 
 from django.http import Http404
 from django.conf import settings
@@ -82,16 +80,15 @@ class DojoJsonRestApiView(generics.ListCreateAPIView):
     def list(self, request, *args, **kwargs):
         qrange = request.META.get("HTTP_RANGE")
         if not qrange:
-            return generics.ListCreateAPIView.list(self, request, *args, **kwargs)
-            # return super(generics.ListCreateAPIView, self).list(
-            #     request, *args, **kwargs)
+            return super(DojoJsonRestApiView, self).list(
+                request, *args, **kwargs)
 
         queryset = self.get_queryset()
         self.object_list = self.filter_queryset(queryset)
 
         # Default is to allow empty querysets.  This can be altered by setting
         # `.allow_empty = False`, to raise 404 errors on empty querysets.
-        allow_empty = self.get_allow_empty()
+        allow_empty = True#self.get_allow_empty()
         if not allow_empty and not self.object_list:
             class_name = self.__class__.__name__
             error_msg = self.empty_error % {'class_name': class_name}
@@ -114,11 +111,11 @@ class ChannelSerializer(serializers.ModelSerializer):
     class Meta:
         model = Channel
 
-    descriptions = serializers.SerializerMethodField('get_descriptions')
-    displayurl = serializers.SerializerMethodField('get_displayurl')
-    url = serializers.SerializerMethodField('get_url')
+    descriptions = serializers.SerializerMethodField()
+    displayurl = serializers.SerializerMethodField()
+    url = serializers.SerializerMethodField()
     ifo = serializers.SerializerMethodField('get_ifoname')
-    status = serializers.SerializerMethodField('get_status')
+    status = serializers.SerializerMethodField()
 
     def get_descriptions(self, obj):
         request = self.context.get('request', None)
@@ -162,6 +159,7 @@ class ChannelList(DojoJsonRestApiView):
 
     model = Channel
     serializer_class = ChannelSerializer
+    queryset = model.objects.all()
 
     paginate_by = 20
     paginate_by_param = 'page_size'

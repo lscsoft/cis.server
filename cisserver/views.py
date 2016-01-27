@@ -42,35 +42,35 @@ def home(request):
 
 
 class IfoListView(ListView):
-    """`~django.views.generic.ListView` for an `~cis.server.models.Ifo`
+    """`~django.views.generic.ListView` for an `~cisserver.models.Ifo`
     """
     context_object_name = "ifo_list"
     model = Ifo
 
 
 class IfoDetailView(DetailView):
-    """`~django.views.generic.DetailView` for an `~cis.server.models.Ifo`
+    """`~django.views.generic.DetailView` for an `~cisserver.models.Ifo`
     """
     context_object_name = "ifo"
     model = Ifo
 
 
 class SubsystemListView(ListView):
-    """`~django.views.generic.ListView` for a `~cis.server.models.Subsystem`
+    """`~django.views.generic.ListView` for a `~cisserver.models.Subsystem`
     """
     context_object_name = "subsystem_list"
     model = Subsystem
 
 
 class SubsystemDetailView(DetailView):
-    """`~django.views.generic.DetailView` for a `~cis.server.models.Subsystem`
+    """`~django.views.generic.DetailView` for a `~cisserver.models.Subsystem`
     """
     context_object_name = "subsystem"
     model = Subsystem
 
 
 class ChannelListView(ListView):
-    """`~django.views.generic.ListView` for a `~cis.server.models.Channel`
+    """`~django.views.generic.ListView` for a `~cisserver.models.Channel`
     """
     context_object_name = "channel_list"
     model = Channel
@@ -93,7 +93,7 @@ class ChannelListView(ListView):
 
 
 class ChannelDetailView(DetailView):
-    """`~django.views.generic.DetailView` for a`~cis.server.models.Channel`
+    """`~django.views.generic.DetailView` for a`~cisserver.models.Channel`
     """
     context_object_name = "channel"
     model = Channel

@@ -16,28 +16,25 @@
 # You should have received a copy of the GNU General Public License
 # along with LIGO CIS Core.  If not, see <http://www.gnu.org/licenses/>.
 
-from django.db.models import Q
-
-import reversion
 import re
 import logging
 
-
-from rest_framework.reverse import reverse
 from django.db.models import (Model, CharField, ForeignKey, FloatField,
                               IntegerField, TextField, DateTimeField,
-                              BooleanField)
-
+                              BooleanField, Q)
 from django.conf import settings
-
 from django.contrib.auth.models import User
+
+from reversion import revisions as reversion
+
+from rest_framework.reverse import reverse
 
 log = logging.getLogger(__name__)
 
 
-class CisModelMixin(object):
+class CisModel(Model):
     class Meta:
-        app_label = 'cis'
+        abstract = True
 
     @classmethod
     def get_or_new(cls, **kwargs):
@@ -49,18 +46,18 @@ class CisModelMixin(object):
             return cls(**kwargs), True
 
 
-class Ifo(Model, CisModelMixin):
+class Ifo(CisModel):
     """Model of a Laser Interferometer
     """
     name = CharField(max_length=10, null=False, unique=True)
-    label = CharField(max_length=5,  null=False, unique=True)
+    label = CharField(max_length=5,  null=False, unique=False)
     description = TextField(null=False)
 
     def __unicode__(self):
         return self.name
 
 
-class Channel(Model, CisModelMixin):
+class Channel(CisModel):
     """Model for a data Channel
 
     A `Channel` is a single, recorded data stream read out from an `Ifo`.
@@ -99,7 +96,7 @@ class Channel(Model, CisModelMixin):
     is_testpoint = BooleanField(default=False, null=False)
 
     def get_datatype_display(self):
-        """Return string display of data type
+        """String display of data type
         """
         return self.DATATYPE.get(self.datatype, self.datatype)
 
@@ -249,22 +246,21 @@ class Channel(Model, CisModelMixin):
 reversion.register(Channel)
 
 
-class Subsystem(Model, CisModelMixin):
+class Subsystem(CisModel):
     """Instrumental sub-system for a `Channel` or set of `Channels`
     """
     name = CharField(max_length=10, null=False, unique=True)
-    label = CharField(max_length=5,  null=False, unique=True)
+    label = CharField(max_length=5,  null=False, unique=False)
     description = TextField(null=False)
 
-    class Meta:
+    class Meta(CisModel.Meta):
         ordering = ["name"]
-        app_label = 'cis'
 
     def __unicode__(self):
         return self.name
 
 
-class ChannelDescription(Model, CisModelMixin):
+class ChannelDescription(CisModel):
     """Description of a channel or sub-section of a channel name.
        This is a simple mapping of 'name' to text.
     """
@@ -287,7 +283,7 @@ class ChannelDescription(Model, CisModelMixin):
 reversion.register(ChannelDescription)
 
 
-class TreeNode(Model, CisModelMixin):
+class TreeNode(CisModel):
     # name -- sub-string of full channel name.
     # Unless this is a leaf node, then it is the full channel name.
     #   eg CHANNEL from L1:PSL-ODC_CHANNEL_OUT_DQ
@@ -351,7 +347,7 @@ class TreeNode(Model, CisModelMixin):
 
 
 # Deprecated. TreeNode is a more descriptive name. Descriptions no longer used.
-class Description(Model, CisModelMixin):
+class Description(CisModel):
     name = CharField(max_length=60, db_index=True)
     fullname = CharField(max_length=60, null=True, db_index=True)
     shortdesc = CharField(max_length=60, null=True, db_index=True)
@@ -437,7 +433,7 @@ reversion.register(Description)
 # A sensor name is a prefix of a channel name.  Given a list of all sensors,
 # and a channel name, we find a sensor name that is a prefix of the
 # channel name.
-class PemSensor(Model, CisModelMixin):
+class PemSensor(CisModel):
     """A model of a Physical Environment Monitoring sensor
     """
     name = CharField(max_length=70, null=False, unique=True)

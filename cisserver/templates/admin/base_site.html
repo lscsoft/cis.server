@@ -1,0 +1,55 @@
+{% extends "admin/base.html" %}
+
+{% block title %}{{ title }} | CIS site admin{% endblock %}
+
+{% block extrastyle %}
+    <link rel="stylesheet" href="https://ajax.googleapis.com/ajax/libs/dojo/1.8.1/dojo/resources/dojo.css">
+    <link rel="stylesheet" href="https://ajax.googleapis.com/ajax/libs/dojo/1.8.1/dijit/themes/tundra/tundra.css">
+    <link rel="stylesheet" href="{{STATIC_URL}}/css/base.css"/>
+
+    <!-- The styles from admin's css interfere with our theme.  Override them.  -->
+    <style type="text/css">
+        #user-tools {
+            color: black;
+        }
+        #header {
+            /* background: none repeat scroll 0 0 #417690; */
+            /* color: #FFFFCC; */
+            background: white;
+            color: black;
+            overflow: hidden;
+        }
+        #header a:link, #header a:visited {
+            color: black;
+        }
+        #header a:hover {
+            text-decoration: underline;
+        }
+        #topnav {
+            color: white;
+        }
+        #topnav a:link, #topnav a:visited {
+            color: white;
+        }
+        #topnav a:hover {
+            text-decoration: none;
+        }
+    </style>
+{% endblock %}
+
+{% block branding %}
+    <img src="{{STATIC_URL}}images/LIGO_logo50.png">
+    <div class="title">CIS Administration<br/>&nbsp;</div>
+{% endblock %}
+
+{% block nav-global %}
+<div id="topnav">
+    <ul>
+        <li id="nav_home"><a href="{% url 'home' %}">Home</a></li>
+        <li id="nav_ifos"><a href="{% url 'ifos' %}">IFOs</a></li>
+        <li id="nav_subsystems"><a href="{% url 'subsystems' %}">Subsystems</a></li>
+        <li id="nav_channels"><a href="{% url 'channels' %}">Channels</a></li>
+        <li id="nav_channels"><a href="{% url 'admin:index' %}">Admin</a></li>
+    </ul>
+</div>
+{% endblock %}

@@ -23,7 +23,7 @@ from optparse import make_option
 import django.db
 from django.core.management.base import BaseCommand
 
-import reversion
+from reversion import revisions as reversion
 
 from ... import version
 from .. import functions
@@ -50,7 +50,7 @@ class Command(BaseCommand):
         parser.add_argument('directory', nargs='+',
                             help="Location of model files")
 
-    def handle(self, updateId, ifo, *directories, **kwargs):
+    def handle(self, updateId, ifo, directory=[], **kwargs):
         """Update the CIS database from DAQ INI files in the given directories
         """
         updateId = int(updateId)
@@ -58,7 +58,9 @@ class Command(BaseCommand):
             update_model = functions.update_virgo_model
         else:
             update_model = functions.update_ligo_model
-        for d in directories:
+        if isinstance(directory, str):
+            directory = directory.split(',')
+        for d in directory:
             for fname in os.listdir(d):
                 source = os.path.splitext(os.path.basename(fname))[0]
                 path = os.path.join(d, fname)

@@ -50,7 +50,7 @@
                  "dojox/grid/DataGrid",
                  "dojo/domReady!"], function(parser, JsonRest, ObjectStore) {
 
-            rest_store = new JsonRest({target: "{% url api-channels %}", sortParam:"sort"});
+            rest_store = new JsonRest({target: "{% url 'api-channels' %}", sortParam:"sort"});
             store = new ObjectStore({objectStore: rest_store});
             parser.parse();
 	    // No sorting on status, which is column 2.
@@ -117,7 +117,7 @@
             <tr>
                 <td>{{channel.ifo.name}}</td>
                 <td>{{channel.subsystem}}</td>
-                <td><a href="{% url channel channel.id %}">{{ channel.name }}</a></td>
+                <td><a href="{% url 'channel' channel.id %}">{{ channel.name }}</a></td>
                 <td>{{channel.datarate}}</td>
                 <td>{{channel.units}}</td>
                 <td>{{channel.acquire}}</td>

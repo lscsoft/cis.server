@@ -40,7 +40,7 @@ __author__ = 'Brian Moe, Duncan Macleod <duncan.macleod@ligo.org>'
 __credits__ = 'The LIGO Scientific Collaboration, The LIGO Laboratory'
 
 urlpatterns = patterns(
-    'cis.server.api.views',
+    'cisserver.api.views',
     # Server root
     url(r'^$',
         Cis.as_view(),

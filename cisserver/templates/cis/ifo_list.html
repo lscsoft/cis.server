@@ -6,7 +6,7 @@
 {% block content %}
     <h2>IFOs</h2>
     {% for ifo in ifo_list %}
-        <a href="{% url ifo ifo.id %}">{{ ifo.name }}</a> &mdash; {{ ifo.description }} <br/>
+        <a href="{% url 'ifo' ifo.id %}">{{ ifo.name }}</a> &mdash; {{ ifo.description }} <br/>
     {% endfor %}
 
 {% endblock %}

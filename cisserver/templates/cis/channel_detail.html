@@ -1,7 +1,7 @@
 
 {% extends "base.html" %}
 
-{% load markup %}
+{% load markup_tags %}
 
 {% block title %}CIS | Channel Detail{% endblock %}
 
@@ -12,7 +12,7 @@
 </script>
 <script>
     function edit_description_url(pk) {
-        s = "{% url edit_description 'change' %}";
+        s = "{% url 'edit_description' 'change' %}";
         return s.replace('change', pk);
     }
 </script>
@@ -30,7 +30,7 @@
     <tr><th>Subsystem</th><td>{{ channel.subsystem }} ({{ channel.subsystem_description }}) <td/></tr>
     <tr><th colspan="2"></th></tr>
     <tr><th>Sample Rate</th><td>{{ channel.datarate }} <td/></tr>
-    <tr><th>Data Type</th><td>{{ channel.datatypeName }} <td/></tr>
+    <tr><th>Data Type</th><td>{{ channel.get_datatype_display }} <td/></tr>
     <tr><th>DCU Id</th><td>{{ channel.dcuid }} <td/></tr>
     <tr><th>Chan Num</th><td>{{ channel.chnnum }} <td/></tr>
     <tr><th colspan="2"></th></tr>

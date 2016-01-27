@@ -11,7 +11,7 @@
 
     <script>
         function edit_description_url(pk) {
-            s = "{% url edit_description 'change' %}";
+            s = "{% url 'edit_description' 'change' %}";
             return s.replace('change', pk);
         }
     </script>
@@ -52,7 +52,7 @@
                  "dojo/domReady!"],
             function(JsonRest, Tree, ContentPane) {
                 store = new JsonRest({
-                    target: "{% url tree %}data/",
+                    target: "{% url 'tree' %}data/",
                     getRoot: function(onItem, onError){
                         this.get("").then(onItem, onError);
                     },
@@ -110,8 +110,8 @@
                         console.log("parentid: " + item.parentid);
                         return;
                     }
-                    //url =  "{% url channel 0 %}"+item.id;
-                    url = "{% url home %}" + "channel/"+item.cid; // XXX BAD
+                    //url =  "{% url 'channel' 0 %}"+item.id;
+                    url = "{% url 'home' %}" + "channel/"+item.cid; // XXX BAD
                     console.log("DOING URL: " + url);
                     cp.set("href", url);
                 }

@@ -24,8 +24,8 @@ from setuptools.command import (build_py, egg_info)
 
 from distutils import log
 
-PACKAGENAME = 'cis-server'
-PROVIDES = 'cis.server'
+PACKAGENAME = 'cisserver'
+PROVIDES = 'cisserver'
 AUTHOR = 'Brian Moe, Duncan Macleod'
 AUTHOR_EMAIL = 'duncan.macleod@ligo.org'
 LICENSE = 'GPLv3'
@@ -58,9 +58,9 @@ class GitVersionMixin(object):
     def update_metadata(self):
         """Import package base and update distribution metadata
         """
-        import cis.server
-        self.distribution.metadata.version = cis.server.__version__
-        desc, longdesc = cis.server.__doc__.split('\n', 1)
+        import cisserver
+        self.distribution.metadata.version = cisserver.__version__
+        desc, longdesc = cisserver.__doc__.split('\n', 1)
         self.distribution.metadata.description = desc
         self.distribution.metadata.long_description = longdesc.strip('\n')
 
@@ -124,7 +124,6 @@ setup(
     url=None,
     # package metadata
     packages=packagenames,
-    namespace_packages=packagenames[:2],
     include_package_data=True,
     scripts=scripts,
     cmdclass=cmdclass,
