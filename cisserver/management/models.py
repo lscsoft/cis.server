@@ -16,22 +16,33 @@
 # You should have received a copy of the GNU General Public License
 # along with LIGO CIS Core.  If not, see <http://www.gnu.org/licenses/>.
 
-from django.core.management.base import BaseCommand
+"""Extra models for `cisserver` management commands
+"""
 
-from ..functions import update_tree_nodes
-from ... import version
+from reversion.models import Revision
+
+from django.db import models
+
+from .. import version
 
 __version__ = version.version
 __author__ = 'Brian Moe, Duncan.macleod <duncan.macleod@ligo.org>'
 __credits__ = 'The LIGO Scientific Collaboration, The LIGO Laboratory'
 
 
-class Command(BaseCommand):
-    """Update TreeNode database after updating channels
-    """
-    help = __doc__.rstrip('\n ')
+class UpdateInfo(models.Model):
+    class Meta:
+        unique_together = ("ifo", "model", "updateId")
 
-    def handle(self, *args, **kwargs):
-        """Update tree nodes across the entire database
-        """
-        update_tree_nodes(verbose=kwargs.get('verbosity', 1))
+    revision = models.OneToOneField(Revision)
+    ifo = models.CharField(max_length=10)
+    model = models.CharField(max_length=20)
+    date = models.DateTimeField()
+    updateId = models.IntegerField()
+
+    @classmethod
+    def get_next_id(cls):
+        try:
+            return cls.objects.order_by('-updateId').all()[0].updateId + 1
+        except IndexError:
+            return 1

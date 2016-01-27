@@ -16,8 +16,22 @@
 # You should have received a copy of the GNU General Public License
 # along with LIGO CIS Core.  If not, see <http://www.gnu.org/licenses/>.
 
+from django.core.management.base import BaseCommand
+
+from ..functions import update_tree_nodes
 from ... import version
 
 __version__ = version.version
 __author__ = 'Brian Moe, Duncan.macleod <duncan.macleod@ligo.org>'
 __credits__ = 'The LIGO Scientific Collaboration, The LIGO Laboratory'
+
+
+class Command(BaseCommand):
+    """Update TreeNode database from current CIS channel table
+    """
+    help = __doc__.rstrip('\n ')
+
+    def handle(self, *args, **kwargs):
+        """Update tree nodes across the entire database
+        """
+        update_tree_nodes(verbose=kwargs.get('verbosity', 1))

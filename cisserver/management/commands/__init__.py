@@ -16,7 +16,10 @@
 # You should have received a copy of the GNU General Public License
 # along with LIGO CIS Core.  If not, see <http://www.gnu.org/licenses/>.
 
-from .. import version
+"""`manage.py` commands for the `cisserver` app
+"""
+
+from ... import version
 
 __version__ = version.version
 __author__ = 'Brian Moe, Duncan.macleod <duncan.macleod@ligo.org>'

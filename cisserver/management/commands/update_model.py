@@ -16,9 +16,11 @@
 # You should have received a copy of the GNU General Public License
 # along with LIGO CIS Core.  If not, see <http://www.gnu.org/licenses/>.
 
+"""Update the CIS database by parsing an INI file from a DAQ model
+"""
+
 import os
 import datetime
-from optparse import make_option
 
 import reversion
 import django.db
@@ -37,29 +39,21 @@ DJANGO_VERSION = get_version()
 
 
 class Command(BaseCommand):
-    """Update channel information with data in model files
+    """Update the CIS database by parsing an INI file from a DAQ model
     """
     args = 'updateId ifo model'
     help = __doc__.rstrip('\n ')
 
-    if DJANGO_VERSION < '1.8':
-        option_list = BaseCommand.option_list + (
-            make_option("--directory", dest="directory", default=".",
-                        help="Location of model files"),
-        )
-    else:
-        def add_arguments(self, parser):
-            """Add arguments to the command-line parser
-
-            This function is only used for Django >= 1.8
-            """
-            parser.add_argument('updateId', type=int, help='ID for this update')
-            parser.add_argument('ifo', help='prefix of IFO for this model')
-            parser.add_argument('model', help='name of model to update')
-            parser.add_argument('-d', '--directory', default='daq',
-                                help='parent directory of model INI files, '
-                                     'default: %(default)s')
-            return parser
+    def add_arguments(self, parser):
+        """Add arguments to the command-line parser
+        """
+        parser.add_argument('updateId', type=int, help='ID for this update')
+        parser.add_argument('ifo', help='prefix of IFO for this model')
+        parser.add_argument('model', help='name of model to update')
+        parser.add_argument('-d', '--directory', default='daq',
+                            help='parent directory of model INI files, '
+                                 'default: %(default)s')
+        return parser
 
     def handle(self, updateId, ifo, *models, **options):
         """Update channel entries for one or more models

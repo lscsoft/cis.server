@@ -16,23 +16,11 @@
 # You should have received a copy of the GNU General Public License
 # along with LIGO CIS Core.  If not, see <http://www.gnu.org/licenses/>.
 
-from django.core.management.base import BaseCommand
+"""Management commands for the `cisserver` django app
+"""
 
-from ..models import UpdateInfo
-from ... import version
+from .. import version
 
 __version__ = version.version
 __author__ = 'Brian Moe, Duncan.macleod <duncan.macleod@ligo.org>'
 __credits__ = 'The LIGO Scientific Collaboration, The LIGO Laboratory'
-
-
-class Command(BaseCommand):
-    """Get next available updateId
-    """
-    args = ''
-    help = __doc__.rstrip('\n ')
-
-    def handle(self, *args, **options):
-        id_ = UpdateInfo.get_next_id()
-        print(id_)
-        return str(id_)

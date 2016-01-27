@@ -18,7 +18,6 @@
 
 import os
 import datetime
-from optparse import make_option
 
 import django.db
 from django.core.management.base import BaseCommand
@@ -35,9 +34,8 @@ __credits__ = 'The LIGO Scientific Collaboration, The LIGO Laboratory'
 
 
 class Command(BaseCommand):
-    """Update channel information from DAQ INI files
+    """Update the CIS database by parsing INI files in one or more directories
     """
-    args = 'updateId ifo directory [directory.. ]'
     help = __doc__.rstrip('\n ')
 
     def add_arguments(self, parser):

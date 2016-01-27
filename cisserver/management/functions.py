@@ -16,6 +16,9 @@
 # You should have received a copy of the GNU General Public License
 # along with LIGO CIS Core.  If not, see <http://www.gnu.org/licenses/>.
 
+"""Functions assicated with management commands for `cisserver`
+"""
+
 from __future__ import print_function
 import warnings
 import sys

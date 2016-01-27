@@ -16,30 +16,21 @@
 # You should have received a copy of the GNU General Public License
 # along with LIGO CIS Core.  If not, see <http://www.gnu.org/licenses/>.
 
-from reversion.models import Revision
+from django.core.management.base import BaseCommand
 
-from django.db import models
-
-from .. import version
+from ..models import UpdateInfo
+from ... import version
 
 __version__ = version.version
 __author__ = 'Brian Moe, Duncan.macleod <duncan.macleod@ligo.org>'
 __credits__ = 'The LIGO Scientific Collaboration, The LIGO Laboratory'
 
 
-class UpdateInfo(models.Model):
-    class Meta:
-        unique_together = ("ifo", "model", "updateId")
+class Command(BaseCommand):
+    """Get next available updateId
+    """
+    help = __doc__.rstrip('\n ')
 
-    revision = models.OneToOneField(Revision)
-    ifo = models.CharField(max_length=10)
-    model = models.CharField(max_length=20)
-    date = models.DateTimeField()
-    updateId = models.IntegerField()
-
-    @classmethod
-    def get_next_id(cls):
-        try:
-            return cls.objects.order_by('-updateId').all()[0].updateId + 1
-        except IndexError:
-            return 1
+    def handle(self, *args, **options):
+        id_ = UpdateInfo.get_next_id()
+        return str(id_)
