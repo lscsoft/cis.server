@@ -17,7 +17,6 @@
 # along with LIGO CIS Core.  If not, see <http://www.gnu.org/licenses/>.
 
 import re
-import logging
 
 from django.db.models import (Model, CharField, ForeignKey, FloatField,
                               IntegerField, TextField, DateTimeField,
@@ -28,8 +27,6 @@ from django.contrib.auth.models import User
 from reversion import revisions as reversion
 
 from rest_framework.reverse import reverse
-
-log = logging.getLogger(__name__)
 
 
 class CisModel(Model):
@@ -302,30 +299,21 @@ class TreeNode(CisModel):
     def add_channel(cls, channel):
         """Add a copy of a channel to the database
         """
-        log.debug("adding channel %s to tree" % channel.name)
         if cls.objects.filter(channel=channel).count():
-            log.debug("channel %s already in tree" % channel.name)
             return
         names = channel.sub_names()
         if not names:
             # This is some weirdo channel that doesn't have
             # recognizable sub-names.  Like a vacuum channel.
             # Ignore it.
-            log.warning("channel %s not fit for the tree -- no sub_names()"
-                        % channel.name)
             return
         node = cls(name=channel.name, channel=channel)
         node.parent = cls.node_with_path(names, create=True)
-        log.debug("about to save node for channel %s" % channel.name)
-        log.debug("-- name   %s" % node.name)
-        log.debug("-- names  %s" % names)
-        log.debug("-- parent %s" % node.parent)
         node.save()
 
     @classmethod
     def node_with_path(cls, path, create=False):
         namepath = ",".join(path)
-        log.debug("node_with_path %s" % path)
         try:
             return cls.objects.get(namepath=namepath)
         except cls.DoesNotExist:
@@ -333,15 +321,10 @@ class TreeNode(CisModel):
                 raise
 
         if not path:
-            log.debug("node_with_path returning None")
             return None
 
         node = cls(name=path[-1], namepath=namepath)
         node.parent = cls.node_with_path(path[0:-1], create)
-        log.debug("about to save node")
-        log.debug("-- name     %s" % node.name)
-        log.debug("-- namepath %s" % node.namepath)
-        log.debug("-- parent   %s" % node.parent)
         node.save()
         return node
 
