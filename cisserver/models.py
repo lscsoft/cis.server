@@ -59,6 +59,13 @@ class Channel(CisModel):
 
     A `Channel` is a single, recorded data stream read out from an `Ifo`.
     """
+    re_name = re.compile(
+        r'((?:(?P<ifo>[A-Z]\d))?|[\w-]+):'  # match IFO prefix
+         '(?:(?P<subsystem>[a-zA-Z0-9]+))?'  # match subsystem
+         '(?:[-_](?P<signal>[a-zA-Z0-9_-]+))?'  # match signal
+         '(?:\.(?P<trend>[a-z]+))?'  # match trend type
+         '(?:,(?P<type>([a-z]-)?[a-z]+))?'  # match channel type
+    )
     DATATYPE = {
         0: "Undefined",
         1: "16-bit Integer",
@@ -163,11 +170,9 @@ class Channel(CisModel):
         names : `list` of `str`
             a list of component sub-strings for this `Channel`
         """
-        match = re.match(
-            r'^(?P<ifo>[A-Z0-9]+):(?P<subsys>[A-Z]+)-(?P<rest>[A-Za-z0-9_]+)$',
-            self.name)
+        match = self.re_name.match(self.name)
         if match:
-            names = [match.group(2)] + match.group(3).split('_')
+            names = [match.group(3)] + match.group(4).split('_')
         else:
             names = []
         if include_self:
@@ -183,14 +188,9 @@ class Channel(CisModel):
     def descriptions(self):
         """Find all `ChannelDescription` entries for this `Channel`
         """
-        match = re.match(
-            r'^(?P<ifo>[A-Z0-9]+):(?P<subsys>[A-Z]+)-(?P<rest>[A-Z0-9_]+)$',
-            self.name)
-        if match:
-            return [ChannelDescription.get_or_new(name=name)[0] for
-                    name in [match.group(2)] + match.group(3).split('_')]
-        # XXX: need to deal with vacuum channels.
-        return []
+        names = self.sub_names()
+        return [ChannelDescription.get_or_new(name=name)[0] for
+                name in self.sub_names()]
 
     @classmethod
     def user_query(cls, query=""):
@@ -255,6 +255,8 @@ class Subsystem(CisModel):
 
     def __unicode__(self):
         return self.name
+
+reversion.register(Subsystem)
 
 
 class ChannelDescription(CisModel):
