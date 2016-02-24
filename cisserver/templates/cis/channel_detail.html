@@ -28,6 +28,7 @@
   <table class="channel_detail">
     <tr><th>IFO</th><td>{{ channel.ifo.name }} ({{ channel.ifo.description }})<td/></tr>
     <tr><th>Subsystem</th><td>{{ channel.subsystem }} ({{ channel.subsystem_description }}) <td/></tr>
+    <tr><th>Model</th><td>{{ channel.source }}<td/></tr>
     <tr><th colspan="2"></th></tr>
     <tr><th>Sample Rate</th><td>{{ channel.datarate }} <td/></tr>
     <tr><th>Data Type</th><td>{{ channel.get_datatype_display }} <td/></tr>
